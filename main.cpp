@@ -21,6 +21,7 @@
 #include <sstream>
 #include <chrono>
 #include <map>
+#include <unistd.h>
 
 
 
@@ -109,17 +110,14 @@ public:
                     config_map[k] = v;
                 }
             }
+            config_file.close();
         } else {
             return 1;
         }
         return 0;
     }
     void wait_for(unsigned int seconds) {
-        clock_t time_end;
-        time_end = clock() + seconds * CLOCKS_PER_SEC;
-        while (clock() < time_end) {
-            
-        }
+        usleep(seconds * 1000000);
     }
 };
 
@@ -174,6 +172,7 @@ public:
                 sum_of_mhz = accumulate(cpu_stats.begin(), cpu_stats.end(), 0);
                 avg_mhz = sum_of_mhz / num_of_cores;
             } 
+            cpuinfo.close();
         }
         returner = avg_mhz;
         return returner;
@@ -203,6 +202,7 @@ public:
             } else if ( what == "fifteen" ) {
                 returner = fifteen;
             }
+            fil.close();
         }
         return returner;
     }
@@ -226,6 +226,8 @@ public:
                 }
             }
             rx_tx = rx + " " + tx;
+            net_rx.close();
+            net_tx.close();
         } else {
             rx_tx = "Err";
         }
@@ -323,7 +325,6 @@ int main(int argc, char** argv) {
     }
     plugins_run = plugins_save;
     
-    
     // Magic
     if (daemon) {
         while (daemon) {
@@ -410,7 +411,6 @@ int main(int argc, char** argv) {
             results.pop_back();
         }
     }
-    
     return 0;
 }
 
